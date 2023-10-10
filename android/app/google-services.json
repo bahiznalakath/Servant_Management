@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56570663770",
+    "project_id": "servant-management",
+    "storage_bucket": "servant-management.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56570663770:android:1a9207cd67be3250f65963",
+        "android_client_info": {
+          "package_name": "com.example.servantmanagement"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-bNDlrp_DYM62Ty5Ho8InYRHUW5vFZ6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
