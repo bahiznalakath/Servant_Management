@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:servantmanagement/UI/user/userdrawerpage.dart';
 import '../../Firebase/Model/servant_model.dart';
+import 'User_Cart.dart';
 import 'WorkerDetailsPage.dart';
 
 class CategoriesList extends StatefulWidget {
@@ -34,6 +35,17 @@ class _CategoriesListState extends State<CategoriesList> {
     }
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>CartPage(selectedWorkers: [],),
+            ),
+          );
+        },
+        child: const Icon(Icons.shopping_cart),
+      ),
       appBar: AppBar(
         title: _isSearching
             ? TextField(

@@ -15,8 +15,6 @@ class UserDrawerPage extends StatefulWidget {
 }
 
 class _UserDrawerPageState extends State<UserDrawerPage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -34,12 +32,24 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
         child: ListView(
           children: <Widget>[
             ListTile(
-              title: const Text('Settings'),
+              title: const Text(
+                'Settings',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
               onTap: () {},
             ),
+            const SizedBox(
+              height: 10,
+            ),
             ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Account'),
+              leading: const Icon(
+                Icons.account_circle,
+                size: 25,
+              ),
+              title: const Text(
+                'Account',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+              ),
               onTap: () {
                 Navigator.push(
                   context,
@@ -49,55 +59,76 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
                 );
               },
             ),
+            const SizedBox(
+              height: 10,
+            ),
             ListTile(
-              leading: const Icon(Icons.shopping_cart),
-              title: const Text('My Cart'),
+              leading: const Icon(
+                Icons.shopping_cart,
+                size: 25,
+              ),
+              title: const Text(
+                'My Cart',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+              ),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CartPage(),
+                    builder: (context) =>  CartPage(selectedWorkers: [],),
                   ),
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Notifications'),
-              onTap: () {},
+            const SizedBox(
+              height: 10,
             ),
             ListTile(
-              leading: const Icon(Icons.history), // Add the icon for history
-              title: const Text('History of Orders'),
+              leading: const Icon(
+                Icons.history,
+                size: 25,
+              ),
+              // Add the icon for history
+              title: const Text(
+                'History of Orders',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+              ),
               onTap: () {},
             ),
-            ListTile(
-              leading: const Icon(Icons.pending_actions),
-              // Add the icon for pending orders
-              title: const Text('Pending Orders'),
-              onTap: () {},
+            const SizedBox(
+              height: 10,
             ),
             ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Exit'),
+              leading: const Icon(
+                Icons.exit_to_app,
+                size: 25,
+              ),
+              title: const Text(
+                'Exit',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+              ),
               onTap: () {
                 SystemNavigator.pop();
               },
             ),
+            const SizedBox(
+              height: 10,
+            ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
+              leading: const Icon(
+                Icons.logout,
+                size: 25,
+              ),
+              title: const Text(
+                'Logout',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+              ),
               onTap: () {
                 signOut().then((_) {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) =>
-                      const UserLogin(), // Replace with your login screen widget
+                          const UserLogin(), // Replace with your login screen widget
                     ),
                   );
                 });
@@ -115,6 +146,7 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
       ),
     );
   }
+
   Future<void> signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -125,5 +157,3 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
     }
   }
 }
-
-

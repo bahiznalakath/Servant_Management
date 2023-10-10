@@ -1,33 +1,39 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../Firebase/Model/servant_model.dart';
+import 'user_cart.dart'; // Assuming you have a UserCart class
 
-class WorkerList extends StatelessWidget {
+class WorkerList extends StatefulWidget {
   final String jobType;
 
-  WorkerList({required this.jobType});
+  const WorkerList({Key? key, required this.jobType}) : super(key: key);
+
+  @override
+  State<WorkerList> createState() => _WorkerListState();
+}
+
+class _WorkerListState extends State<WorkerList> {
+  final List<ServantModel> selectedWorkers = [];
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('servants')
-          .where('jobType', isEqualTo: jobType) // Filter by jobType
+          .where('jobType', isEqualTo: widget.jobType)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const CircularProgressIndicator();
         }
         final List<ServantModel> workers = snapshot.data!.docs.map((document) {
-          return ServantModel.fromMap(document.data() as Map<String, dynamic>);
+          return ServantModel.fromJson(document.data() as Map<String, dynamic>);
         }).toList();
-
-        print(workers);
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Worker List of - $jobType'),
+            title: Text('Worker List of - ${widget.jobType}'),
             backgroundColor: const Color(0xffe76f86),
           ),
           body: Container(
@@ -45,22 +51,22 @@ class WorkerList extends StatelessWidget {
               itemCount: workers.length,
               itemBuilder: (context, index) {
                 final worker = workers[index];
+                final isWorkerInCart = selectedWorkers.contains(worker);
+
                 return Column(
                   children: [
                     const SizedBox(
                       height: 20,
                     ),
                     Card(
-                      elevation: 3, // Add elevation for a shadow effect
+                      elevation: 3,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(10.0), // Add rounded corners
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Container(
                         height: 150,
                         width: 340,
                         padding: const EdgeInsets.all(16.0),
-                        // Add padding for spacing
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,15 +79,14 @@ class WorkerList extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(
-                              height: 5, // Adjust spacing
+                              height: 5,
                             ),
                             Text(
                               'Experience: ${worker.experience ?? 0} years',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18, // Adjust font size
-                                color: Colors
-                                    .grey, // Add some color to secondary information
+                                fontSize: 18,
+                                color: Colors.grey,
                               ),
                             ),
                             const SizedBox(
@@ -90,22 +95,17 @@ class WorkerList extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // Add to Cart button
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Implement add to cart logic here
+                                    isWorkerInCart
+                                        ? removeFromCart(worker)
+                                        : addToCart(worker);
                                   },
-                                  child: const Text('Add to Cart'),
-                                ),
-                                // Rating system (e.g., using stars)
-                                const Row(
-                                  children: [
-                                    Icon(Icons.star, color: Colors.yellow),
-                                    Icon(Icons.star, color: Colors.yellow),
-                                    Icon(Icons.star, color: Colors.yellow),
-                                    Icon(Icons.star_border, color: Colors.yellow),
-                                    Icon(Icons.star_border, color: Colors.yellow),
-                                  ],
+                                  child: Text(
+                                    isWorkerInCart
+                                        ? 'REMOVE FROM CART'
+                                        : 'ADD TO CART',
+                                  ),
                                 ),
                               ],
                             ),
@@ -118,8 +118,45 @@ class WorkerList extends StatelessWidget {
               },
             ),
           ),
+          floatingActionButton: ElevatedButton(
+            onPressed: navigateToCartPage,
+            child: Text('Go to Cart (${selectedWorkers.length})'),
+          ),
         );
       },
     );
   }
+
+  void addToCart(ServantModel worker) {
+    setState(() {
+      selectedWorkers.add(worker);
+    });
+    Fluttertoast.showToast(
+      msg: "Worker added to cart successfully",
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
+
+  void removeFromCart(ServantModel worker) {
+    setState(() {
+      selectedWorkers.remove(worker);
+    });
+    Fluttertoast.showToast(
+      msg: "Worker removed from cart",
+      toastLength: Toast.LENGTH_SHORT,
+    );
+  }
+
+  void navigateToCartPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartPage(selectedWorkers: selectedWorkers),
+      ),
+    ).then((value) {
+      // Clear the selectedWorkers list when returning from CartPage
+      selectedWorkers.clear();
+    });
+  }
 }
+
