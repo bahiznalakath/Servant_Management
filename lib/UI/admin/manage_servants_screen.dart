@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 
 class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({super.key});
+  const AdminDashboard({Key? key}) : super(key: key);
 
   @override
-  State<AdminDashboard> createState() => _AdminDashboardState();
+  _AdminDashboardState createState() => _AdminDashboardState();
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Admin Dashboard'),
+        bottom: const TabBar(
+          tabs: [
+            Tab(text: 'Manage Users'),
+            Tab(text: 'Manage Servants'),
+          ],
+        ),
+      ),
+      body: const TabBarView(
+        children: [
+          // Content for managing users
+          Center(
+            child: Text('User Management Content'),
+          ),
+          // Content for managing servants
+          Center(
+            child: Text('Servant Management Content'),
+          ),
+        ],
+      ),
+    );
   }
 }

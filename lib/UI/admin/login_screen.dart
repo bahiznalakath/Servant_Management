@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-
+import 'manage_servants_screen.dart';
 
 class AdminLogin extends StatefulWidget {
   const AdminLogin({Key? key}) : super(key: key);
@@ -10,8 +12,9 @@ class AdminLogin extends StatefulWidget {
 }
 
 class _AdminLoginState extends State<AdminLogin> {
-  TextEditingController passwordTextController = TextEditingController();
-  TextEditingController emailTextController = TextEditingController();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final TextEditingController _passwordTextController = TextEditingController();
+  final TextEditingController _userNameTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +25,8 @@ class _AdminLoginState extends State<AdminLogin> {
           width: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(colors: [
-              Color(0xffB81736),
-              Color(0xff281537),
+              Color(0xffe76f86),
+              Color(0xffd3bde5),
             ]),
           ),
         ),
@@ -44,7 +47,6 @@ class _AdminLoginState extends State<AdminLogin> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-
                     const SizedBox(height: 20.0),
                     Container(
                       decoration: BoxDecoration(
@@ -58,21 +60,21 @@ class _AdminLoginState extends State<AdminLogin> {
                           ]),
                       child: TextFormField(
                         autofocus: false,
-                        controller: emailTextController,
+                        controller: _userNameTextController,
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "Please Enter Your Email";
                           }
                           if (!RegExp(
-                              "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]+")
+                                  "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]+")
                               .hasMatch(value)) {
                             return "Please Enter a Valid Email";
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          emailTextController.text = value!;
+                          _userNameTextController.text = value!;
                         },
                         textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
@@ -81,11 +83,11 @@ class _AdminLoginState extends State<AdminLogin> {
                             color: Colors.black,
                           ),
                           contentPadding:
-                          const EdgeInsets.fromLTRB(20, 15, 20, 20),
+                              const EdgeInsets.fromLTRB(20, 15, 20, 20),
                           hintText: "Email",
                           labelText: "Enter Admin Email",
                           labelStyle:
-                          TextStyle(color: Colors.black.withOpacity(0.9)),
+                              TextStyle(color: Colors.black.withOpacity(0.9)),
                           filled: true,
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                           fillColor: Colors.black.withOpacity(0.3),
@@ -112,7 +114,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           ]),
                       child: TextFormField(
                         autofocus: false,
-                        controller: passwordTextController,
+                        controller: _passwordTextController,
                         obscureText: true,
                         validator: (value) {
                           RegExp regex = RegExp(r'^.{6,}$');
@@ -125,7 +127,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           return null;
                         },
                         onSaved: (value) {
-                          passwordTextController.text = value!;
+                          _passwordTextController.text = value!;
                         },
                         textInputAction: TextInputAction.done,
                         style: TextStyle(color: Colors.black.withOpacity(0.9)),
@@ -135,11 +137,11 @@ class _AdminLoginState extends State<AdminLogin> {
                             color: Colors.black,
                           ),
                           contentPadding:
-                          const EdgeInsets.fromLTRB(20, 15, 20, 20),
+                              const EdgeInsets.fromLTRB(20, 15, 20, 20),
                           hintText: "Password",
                           labelText: "Admin pass",
                           labelStyle:
-                          TextStyle(color: Colors.black.withOpacity(0.9)),
+                              TextStyle(color: Colors.black.withOpacity(0.9)),
                           filled: true,
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                           fillColor: Colors.black.withOpacity(0.3),
@@ -151,11 +153,9 @@ class _AdminLoginState extends State<AdminLogin> {
                         ),
                       ),
                     ),
-
                     const SizedBox(
                       height: 10,
                     ),
-
                     SizedBox(
                       height: 50,
                       width: 200,
@@ -171,12 +171,11 @@ class _AdminLoginState extends State<AdminLogin> {
                             ]),
                         child: ElevatedButton(
                           onPressed: () {
-
+                            () => _signIn(context);
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 5,
-                            backgroundColor:
-                            const Color(0xffB81736),
+                            backgroundColor: const Color(0xffB81736),
                           ),
                           child: const Text(
                             "Login",
@@ -186,12 +185,47 @@ class _AdminLoginState extends State<AdminLogin> {
                       ),
                     ),
                     const SizedBox(height: 40.0),
-
                   ],
                 ),
               ),
             ))
       ]),
+    );
+  }
+
+  Future<void> _signIn(BuildContext context) async {
+    final panelCode = _userNameTextController.text.trim();
+    final password = _passwordTextController.text.trim();
+
+    if (panelCode.isEmpty || password.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Both Panel Code and Password are required",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+      return;
+    }
+
+    final adminRef = FirebaseFirestore.instance.collection('adminLogin');
+    final querySnapshot = await adminRef
+        .where('userName', isEqualTo: panelCode)
+        .where('password', isEqualTo: password)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Invalid credentials",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    } else {
+      _navigateToAdminDashboard();
+    }
+  }
+
+  void _navigateToAdminDashboard() {
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (_) => const AdminDashboard(),
+      ),
     );
   }
 }
