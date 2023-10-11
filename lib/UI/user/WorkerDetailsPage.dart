@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -97,6 +98,28 @@ class _WorkerListState extends State<WorkerList> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(
+                                          'Order for ${worker.jobType} confirmed.'),
+                                      action: SnackBarAction(
+                                        label: 'CANCEL',
+                                        onPressed: () {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Order for ${worker.jobType} canceled.'),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ));
+                                  },
+                                  child:  Text('Booking${worker.userName}'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
                                     isWorkerInCart
                                         ? removeFromCart(worker)
                                         : addToCart(worker);
@@ -159,4 +182,3 @@ class _WorkerListState extends State<WorkerList> {
     });
   }
 }
-

@@ -17,6 +17,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           tabs: [
             Tab(text: 'Manage Users'),
             Tab(text: 'Manage Servants'),
+            Tab(text: 'view total bookings',)
           ],
         ),
       ),
@@ -29,6 +30,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           // Content for managing servants
           Center(
             child: Text('Servant Management Content'),
+          ),
+          Center(
+            child: Text('Servant and User view total bookings  Content'),
           ),
         ],
       ),

@@ -29,6 +29,17 @@ class _AdminLoginState extends State<AdminLogin> {
               Color(0xffd3bde5),
             ]),
           ),
+          child: const Padding(
+              padding: EdgeInsets.only(top: 60.0, left: 22),
+              child:Text(
+                'Admin Login\n You can Manage user and servant',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              )
+          ),
         ),
         Padding(
             padding: const EdgeInsets.only(top: 200.0),
@@ -64,13 +75,9 @@ class _AdminLoginState extends State<AdminLogin> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return "Please Enter Your Email";
+                            return "Please Enter ";
                           }
-                          if (!RegExp(
-                                  "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]+")
-                              .hasMatch(value)) {
-                            return "Please Enter a Valid Email";
-                          }
+
                           return null;
                         },
                         onSaved: (value) {
@@ -85,7 +92,7 @@ class _AdminLoginState extends State<AdminLogin> {
                           contentPadding:
                               const EdgeInsets.fromLTRB(20, 15, 20, 20),
                           hintText: "Email",
-                          labelText: "Enter Admin Email",
+                          labelText: "Enter Admin username",
                           labelStyle:
                               TextStyle(color: Colors.black.withOpacity(0.9)),
                           filled: true,
@@ -117,13 +124,11 @@ class _AdminLoginState extends State<AdminLogin> {
                         controller: _passwordTextController,
                         obscureText: true,
                         validator: (value) {
-                          RegExp regex = RegExp(r'^.{6,}$');
+
                           if (value!.isEmpty) {
                             return "Password is required for login";
                           }
-                          if (!regex.hasMatch(value)) {
-                            return "Enter valid Password (Min. 6 Character)";
-                          }
+
                           return null;
                         },
                         onSaved: (value) {
@@ -171,7 +176,8 @@ class _AdminLoginState extends State<AdminLogin> {
                             ]),
                         child: ElevatedButton(
                           onPressed: () {
-                            () => _signIn(context);
+                            print("buttonholed");
+                            _signIn(context);
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 5,
@@ -199,7 +205,7 @@ class _AdminLoginState extends State<AdminLogin> {
 
     if (panelCode.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
-        msg: "Both Panel Code and Password are required",
+        msg: "Both Admin Username and Password are required",
         toastLength: Toast.LENGTH_SHORT,
       );
       return;
@@ -222,7 +228,8 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   void _navigateToAdminDashboard() {
-    navigatorKey.currentState?.push(
+    Fluttertoast.showToast(msg: "Login Admin Successful ");
+    Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const AdminDashboard(),
       ),

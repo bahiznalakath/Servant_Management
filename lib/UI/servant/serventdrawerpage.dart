@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../more_about.dart';
 import 'login_screen.dart';
 import 'manage_profile_screen.dart';
 
@@ -98,7 +99,14 @@ class _ServentDrawerPageState extends State<ServentDrawerPage> {
               height: 145,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return MyDialog();
+                  },
+                );
+              },
               child: const Text('More about'),
             ),
           ],

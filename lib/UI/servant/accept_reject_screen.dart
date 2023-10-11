@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:servantmanagement/UI/servant/serventdrawerpage.dart';
-
+// pass order conferm from page of user  workers deta
 class AcceptRejectPage extends StatefulWidget {
   const AcceptRejectPage({Key? key}) : super(key: key);
 

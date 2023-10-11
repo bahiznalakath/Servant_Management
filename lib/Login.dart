@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'UI/more_about.dart';
 import 'UI/servant/login_screen.dart';
 import 'UI/user/login_screen.dart';
 
@@ -28,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             // const SizedBox(height: 50,),
             const Spacer(),
-             const Padding(
+            const Padding(
               padding: EdgeInsets.all(20.0),
               child: Center(
                 child: Text(
@@ -56,7 +57,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-                child: const Text("User",style: TextStyle(fontSize: 20),),
+                child: const Text(
+                  "User",
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
             const SizedBox(
@@ -66,15 +70,18 @@ class _LoginPageState extends State<LoginPage> {
               height: 45,
               width: 300,
               child: ElevatedButton(
-                onPressed: ()  {
+                onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const  ServantLogin(),
+                      builder: (context) => const ServantLogin(),
                     ),
                   );
                 },
-                child: const Text("Servant",style: TextStyle(fontSize: 20),),
+                child: const Text(
+                  "Servant",
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
             Expanded(
@@ -84,7 +91,12 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.all(20.0),
                   child: TextButton(
                     onPressed: () {
-                      // Handle the "More Text" button click.
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const MyDialog();
+                        },
+                      );
                     },
                     child: const Text("More About"),
                   ),

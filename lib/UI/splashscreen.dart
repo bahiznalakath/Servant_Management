@@ -22,53 +22,37 @@ class _SplashScreenState extends State<SplashScreen> {
     _navigateToNextScreen();
   }
 
-
   void _navigateToNextScreen() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
 
     await Future.delayed(const Duration(seconds: 3));
 
-    if (FirebaseAuth.instance.currentUser!= null) {
-      // Determine the user's type (replace with your logic)
-      String userType = 'user'; // Replace with your logic to determine the user type
+    String? userType = user != null
+        ? 'user'
+        : null; // Replace with your logic to determine the user type
 
+    if (userType != null) {
       switch (userType) {
         case 'user':
-        // Regular user is logged in, navigate to the user homepage.
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const CategoriesList(),
-            ),
-          );
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => CategoriesList()));
           break;
         case 'servant':
-        // Servant is logged in, navigate to the servant homepage.
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const AcceptRejectPage(),
-            ),
-          );
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => AcceptRejectPage()));
           break;
         case 'admin':
-        // Admin is logged in, navigate to the admin dashboard.
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const AdminDashboard(),
-            ),
-          );
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => AdminDashboard()));
           break;
         default:
-        // If the userType is not recognized, you can navigate to a default page or handle the situation as needed.
+          // Handle the situation as needed when userType is not recognized.
           break;
       }
     } else {
-      // User is not logged in, navigate to the login screen.
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const LoginPage(),
-        ),
-      );
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
 
@@ -149,10 +133,8 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             CircleAvatar(
                 radius: 54,
-                child: Icon(
-                  Icons.percent_rounded,
-                  size: 63,
-                )),
+              backgroundImage: AssetImage("assets/images/log.jpg"),
+               ),
             SizedBox(
               height: 100,
             ),
@@ -182,6 +164,7 @@ class _SplashScreenState extends State<SplashScreen> {
       ),
     );
   }
+
   String determineUserType() {
     // Implement your logic here to determine the user type.
     // You can use any criteria or user interaction you want.
@@ -196,7 +179,5 @@ class _SplashScreenState extends State<SplashScreen> {
     } else {
       return 'servant';
     }
-
   }
-
 }

@@ -6,6 +6,7 @@ import 'package:servantmanagement/UI/user/login_screen.dart';
 
 import 'User_Cart.dart';
 import 'manage_profile_screen.dart';
+import '../more_about.dart';
 
 class UserDrawerPage extends StatefulWidget {
   const UserDrawerPage({super.key});
@@ -138,7 +139,14 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
               height: 175,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return MyDialog();
+                  },
+                );
+              },
               child: const Text('More about'),
             ),
           ],
