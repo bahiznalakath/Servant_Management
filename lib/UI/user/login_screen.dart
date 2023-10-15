@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import '../../reusable_widgets/simple.dart';
 import 'category_screen.dart';
 import 'registration_screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -30,16 +35,15 @@ class _UserLoginState extends State<UserLogin> {
             ]),
           ),
           child: const Padding(
-            padding: EdgeInsets.only(top: 60.0, left: 22),
-            child: Text(
-              'Welcome to Our App\nPlease Log In',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            )
-          ),
+              padding: EdgeInsets.only(top: 60.0, left: 22),
+              child: Text(
+                'Welcome to Our App\nPlease Log In',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              )),
         ),
         Padding(
             padding: const EdgeInsets.only(top: 200.0),
@@ -61,7 +65,6 @@ class _UserLoginState extends State<UserLogin> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-
                         const SizedBox(height: 170.0),
                         TextFormField(
                           autofocus: false,
@@ -97,7 +100,8 @@ class _UserLoginState extends State<UserLogin> {
                           controller: passwordTextController,
                           obscureText: true,
                           textInputAction: TextInputAction.done,
-                          style: TextStyle(color: Colors.black.withOpacity(0.9)),
+                          style:
+                              TextStyle(color: Colors.black.withOpacity(0.9)),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(
                               Icons.vpn_key,
@@ -119,7 +123,6 @@ class _UserLoginState extends State<UserLogin> {
                             ),
                           ),
                         ),
-
                         const SizedBox(
                           height: 10,
                         ),
@@ -144,26 +147,40 @@ class _UserLoginState extends State<UserLogin> {
                                       offset: Offset(0, 10))
                                 ]),
                             child: ElevatedButton(
-                              onPressed: () {
-                                FirebaseAuth.instance
-                                    .signInWithEmailAndPassword(
-                                    email: emailTextController.text,
-                                    password: passwordTextController.text)
-                                    .then((value) {
-                                  Fluttertoast.showToast(msg: "Login Successful ");
-                                  print("Log In successfully");
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>const CategoriesList()));
-                                }).catchError((e) {
-                                  Fluttertoast.showToast(msg: e!.message);
-                                });
-                              },
+                              onPressed: _login,
+                              //     () {
+                              //   FirebaseAuth auth = FirebaseAuth.instance;
+                              //
+                              //   auth.signInWithEmailAndPassword(
+                              //     email: emailTextController.text,
+                              //     password: passwordTextController.text,
+                              //   ).then((userCredential) {
+                              //     if (userCredential.user != null) {
+                              //       // User is logged in.
+                              //       print("User is logged in: ${userCredential.user.email}");
+                              //     } else {
+                              //       // User is not logged in.
+                              //       print("User is not logged in.");
+                              //     }
+                              //   }).catchError((error) {
+                              //     // Handle sign-in errors.
+                              //     print("Error: $error");
+                              //   }
+                              //
+                              //   .then((value) {
+                              //     Fluttertoast.showToast(msg: "Login Successful ");
+                              //     print("Log In successfully");
+                              //     Navigator.pushReplacement(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //             builder: (context) =>const CategoriesList()));
+                              //   }).catchError((e) {
+                              //     Fluttertoast.showToast(msg: e!.message);
+                              //   });
+                              // },
                               style: ElevatedButton.styleFrom(
                                 elevation: 5,
-                                backgroundColor:
-                                    const Color(0xffB81736),
+                                backgroundColor: const Color(0xffB81736),
                               ),
                               child: const Text(
                                 "Login",
@@ -172,7 +189,23 @@ class _UserLoginState extends State<UserLogin> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 100.0),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        SizedBox(
+                          height: 100,
+                          width: 300,
+                          child: GestureDetector(
+                            onTap: () {
+                              _handlegooglebuttonClick();
+                              print('Google Sign Successfully');
+                            },
+                            child: CircleAvatar(
+                                backgroundColor: Colors.transparent,
+                                child: Image.asset('assets/images/google.png')),
+                          ),
+                        ),
+                        const SizedBox(height: 80.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -202,5 +235,80 @@ class _UserLoginState extends State<UserLogin> {
             ))
       ]),
     );
+  }
+
+  void _login() async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailTextController.text,
+        password: passwordTextController.text,
+      );
+
+      if (userCredential.user != Directory.current) {
+        print("User is logged in: ${userCredential.user!.email}");
+        Fluttertoast.showToast(msg: "Login Successful");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CategoriesList()),
+        );
+      } else {
+        print("User is not logged in.");
+      }
+    } catch (e) {
+      // Handle sign-in errors.
+      print("Error: $e");
+      Fluttertoast.showToast(msg: e.toString());
+    }
+  }
+
+  _handlegooglebuttonClick() {
+    Dialogs.showProgressBar(context);
+
+    _signInWithGoogle().then((user) async {
+      Navigator.pop(context);
+
+      if (user != null) {
+        print('User:${user.user}');
+        print('UserAdditionalInfo: ${user.additionalUserInfo}');
+        print("Login successful with google");
+
+        if (await APIs.userExists()) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CategoriesList()),
+          );
+        } else {
+          await APIs.createUser().then((value) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const CategoriesList()),
+            );
+          });
+        }
+      }
+    });
+  }
+
+  Future<UserCredential?> _signInWithGoogle() async {
+    try {
+      await InternetAddress.lookup('google.com');
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      // Once signed in, return the UserCredential
+      return await APIs.auth.signInWithCredential(credential);
+    } catch (e) {
+      log('_signInWithGoogle : $e' as String);
+      Dialogs.showSnackbar(context, "Something Went Wrong (Check Internet !)");
+      return null;
+    }
   }
 }

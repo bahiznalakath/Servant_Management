@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import '../../Login.dart';
 import '../more_about.dart';
-import 'login_screen.dart';
 import 'manage_profile_screen.dart';
 
 class ServentDrawerPage extends StatefulWidget {
@@ -31,69 +30,70 @@ class _ServentDrawerPageState extends State<ServentDrawerPage> {
         child: ListView(
           children: <Widget>[
             ListTile(
-              title: const Text('Settings'),
+              title: const Text('Settings',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 34
+              ),),
               onTap: () {
                 // Navigate to the settings page.
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Account'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ServantDetailsPage(),
-                  ),
-                );
-              },
+            const SizedBox(
+              height: 10,
             ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart),
-              title: const Text('My Works'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Notifications'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.history), // Add the icon for history
-              title: const Text('History of Works'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.pending_actions),
-              // Add the icon for pending orders
-              title: const Text('Pending Works'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Exit'),
-              onTap: () {
-                SystemNavigator.pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                signOut().then((_) {
-                  Navigator.of(context).pushReplacement(
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.account_circle,color: Colors.black,),
+                title: const Text('Account',style: TextStyle(fontWeight: FontWeight.bold
+                ),),
+                onTap: () {
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          const ServantLogin(), // Replace with your login screen widget
+                      builder: (context) => const ServantDetailsPage(),
                     ),
                   );
-                });
-              },
+                },
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.history,color: Colors.black,), // Add the icon for history
+                title: const Text('History of Works',style: TextStyle(fontWeight: FontWeight.bold),),
+                onTap: () {},
+              ),
+            ),
+
+            const SizedBox(
+              height: 10,
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.exit_to_app,color: Colors.black,),
+                title: const Text('Exit',style: TextStyle(fontWeight: FontWeight.bold),),
+                onTap: () {
+                  SystemNavigator.pop();
+                },
+              ),
+            ),   const SizedBox(
+              height: 10,
+            ),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.logout,color: Colors.black,),
+                title: const Text('Logout',style: TextStyle(fontWeight: FontWeight.bold),),
+                onTap: () {
+                  signOut().then((_) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const LoginPage(), // Replace with your login screen widget
+                      ),
+                    );
+                  });
+                },
+              ),
             ),
             const SizedBox(
               height: 145,

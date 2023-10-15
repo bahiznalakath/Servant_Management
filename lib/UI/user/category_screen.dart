@@ -4,7 +4,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:servantmanagement/UI/user/userdrawerpage.dart';
 import '../../Firebase/Model/servant_model.dart';
-import 'User_Cart.dart';
 import 'WorkerDetailsPage.dart';
 
 class CategoriesList extends StatefulWidget {
@@ -44,19 +43,6 @@ class _CategoriesListState extends State<CategoriesList> {
     }
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CartPage(
-                selectedWorkers: [],
-              ),
-            ),
-          );
-        },
-        child: const Icon(Icons.shopping_cart),
-      ),
       appBar: AppBar(
         title: _isSearching
             ? TextField(
@@ -166,8 +152,7 @@ class _CategoriesListState extends State<CategoriesList> {
                   final jobType = _isSearching
                       ? _searchList[index]
                       : ServantModel
-                          .jobTypes[index]; // Use either search or regular list
-// Get the corresponding icon for the job type
+                          .jobTypes[index];
                   final icon = _jobTypeIcons[index % _jobTypeIcons.length];
                   return Card(
                     elevation: 4.0,
@@ -186,7 +171,7 @@ class _CategoriesListState extends State<CategoriesList> {
                               ),
                             ],
                           ),
-                          // leading: Icon(icon), // Add the icon here
+
                           title: Text(jobType),
                           onTap: () {
                             _handleCategoryTap(jobType);

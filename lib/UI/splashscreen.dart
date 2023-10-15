@@ -1,116 +1,73 @@
-import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/material.dart";
-import "package:flutter_spinkit/flutter_spinkit.dart";
-import "package:servantmanagement/UI/servant/accept_reject_screen.dart";
-import "package:servantmanagement/UI/user/category_screen.dart";
-import "../Login.dart";
-import "admin/manage_servants_screen.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:servantmanagement/UI/servant/accept_reject_screen.dart';
+import 'package:servantmanagement/UI/user/category_screen.dart';
+import 'admin/AdminDashboard.dart';
+import 'admin/manage_servants_screen.dart';
+import '../Login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Determine the user type based on some logic, and then call _navigateToNextScreen.
-    // String userType = determineUserType(); // Replace determineUserType() with your logic.
     _navigateToNextScreen();
   }
 
-  void _navigateToNextScreen() async {
+  Future<void> _navigateToNextScreen() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
 
     await Future.delayed(const Duration(seconds: 3));
 
-    String? userType = user != null
-        ? 'user'
-        : null; // Replace with your logic to determine the user type
-
-    if (userType != null) {
-      switch (userType) {
-        case 'user':
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => CategoriesList()));
-          break;
-        case 'servant':
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => AcceptRejectPage()));
-          break;
-        case 'admin':
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => AdminDashboard()));
-          break;
-        default:
-          // Handle the situation as needed when userType is not recognized.
-          break;
-      }
+    if (user == null) {
+      // User is not logged in, navigate to the login page.
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
     } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      String userType = await getUserTypeFromDatabase(user);
+
+      if (userType == 'user') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => CategoriesList(),
+          ),
+        );
+      } else if (userType == 'servant') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => AcceptRejectPage(),
+          ),
+        );
+      } else if (userType == 'admin') {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => AdminDashboard(),
+          ),
+        );
+      } else {
+        // Handle other user types or show an appropriate message.
+        // You may navigate to a default page or display an error message.
+        // For example:
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      }
     }
   }
-
-  // void _navigateToNextScreen() async {
-  //   FirebaseAuth auth = FirebaseAuth.instance;
-  //   User? user = auth.currentUser;
-  //
-  //   await Future.delayed(const Duration(seconds: 3));
-  //
-  //   if (user != null) {
-  //     // User is logged in, navigate to the home screen.
-  //     Navigator.of(context).pushReplacement(
-  //       MaterialPageRoute(
-  //         builder: (context) => const CategoriesList(),
-  //       ),
-  //     );
-  //   } else {
-  //     // User is not logged in, navigate to the login screen.
-  //     Navigator.of(context).pushReplacement(
-  //       MaterialPageRoute(
-  //         builder: (context) => const LoginPage(),
-  //       ),
-  //     );
-  //   }
-  // }
-
-  // void _navigateToNextScreen(String userType) async {
-  //   FirebaseAuth auth = FirebaseAuth.instance;
-  //   User? user = auth.currentUser;
-  //
-  //   await Future.delayed(const Duration(seconds: 3));
-  //
-  //   if (user != null) {
-  //     // User is logged in, navigate to the appropriate home screen.
-  //     if (userType == 'user') {
-  //       Navigator.of(context).pushReplacement(
-  //         MaterialPageRoute(
-  //           builder: (context) => const CategoriesList(),
-  //         ),
-  //       );
-  //     } else if (userType == 'servant') {
-  //       Navigator.of(context).pushReplacement(
-  //         MaterialPageRoute(
-  //           builder: (context) => const AcceptRejectPage(),
-  //         ),
-  //       );
-  //     }
-  //   } else {
-  //     // User is not logged in, stay on the MainLogin page.
-  //     // You can display a message or handle this case as needed.
-  //         // User is not logged in, navigate to the login screen.
-  //         Navigator.of(context).pushReplacement(
-  //           MaterialPageRoute(
-  //             builder: (context) => const LoginPage(),
-  //           ),
-  //         );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +89,9 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
-                radius: 54,
+              radius: 54,
               backgroundImage: AssetImage("assets/images/log.jpg"),
-               ),
+            ),
             SizedBox(
               height: 100,
             ),
@@ -165,19 +122,28 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
-  String determineUserType() {
-    // Implement your logic here to determine the user type.
-    // You can use any criteria or user interaction you want.
+  Future<String> getUserTypeFromDatabase(User user) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // For example, you can check some state or variable in your app.
-    // Assuming you have a boolean variable isUserSelected, you can do something like this:
+    DocumentReference userRef = firestore.collection('users').doc(user.uid);
 
-    bool isUserSelected = true; // Set this based on user interaction.
+    try {
+      DocumentSnapshot snapshot = await userRef.get();
 
-    if (isUserSelected) {
-      return 'user';
-    } else {
-      return 'servant';
+      if (snapshot.exists) {
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        if (userData.containsKey('userType')) {
+          String userType = userData['userType'];
+          return userType;
+        } else {
+          return 'unknown'; // Handle the case where the 'userType' field does not exist.
+        }
+      } else {
+        return 'unknown'; // Handle the case where the user document does not exist.
+      }
+    } catch (e) {
+      print("Error retrieving user type: $e");
+      return 'unknown'; // Handle errors appropriately.
     }
   }
 }

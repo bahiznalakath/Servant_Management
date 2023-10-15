@@ -1,9 +1,9 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:servantmanagement/UI/user/user_servet_favorite.dart';
 import '../../Firebase/Model/servant_model.dart';
-import 'user_cart.dart'; // Assuming you have a UserCart class
 
 class WorkerList extends StatefulWidget {
   final String jobType;
@@ -65,7 +65,7 @@ class _WorkerListState extends State<WorkerList> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Container(
-                        height: 150,
+                        height: 190,
                         width: 340,
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -93,44 +93,28 @@ class _WorkerListState extends State<WorkerList> {
                             const SizedBox(
                               height: 7,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text(
-                                          'Order for ${worker.jobType} confirmed.'),
-                                      action: SnackBarAction(
-                                        label: 'CANCEL',
-                                        onPressed: () {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Order for ${worker.jobType} canceled.'),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ));
-                                  },
-                                  child:  Text('Booking${worker.userName}'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    isWorkerInCart
-                                        ? removeFromCart(worker)
-                                        : addToCart(worker);
-                                  },
-                                  child: Text(
-                                    isWorkerInCart
-                                        ? 'REMOVE FROM CART'
-                                        : 'ADD TO CART',
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      placeOrder(worker);
+                                    },
+                                    child: Text('Booking ${worker.userName}'),
                                   ),
-                                ),
-                              ],
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      addFavorite(worker);
+                                    },
+                                    child: Text(
+                                      isWorkerInCart
+                                          ? 'Remove Favorite servants'
+                                          : 'Add to Favorite servants',
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -142,43 +126,87 @@ class _WorkerListState extends State<WorkerList> {
             ),
           ),
           floatingActionButton: ElevatedButton(
-            onPressed: navigateToCartPage,
-            child: Text('Go to Cart (${selectedWorkers.length})'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FavoritesPage(),
+                ),
+              );
+            },
+            child: Text('Favorite servants (${selectedWorkers.length})'),
           ),
         );
       },
     );
   }
 
-  void addToCart(ServantModel worker) {
-    setState(() {
-      selectedWorkers.add(worker);
-    });
-    Fluttertoast.showToast(
-      msg: "Worker added to cart successfully",
-      toastLength: Toast.LENGTH_SHORT,
-    );
+  void addFavorite(ServantModel worker) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        FirebaseFirestore.instance
+            .collection('user_carts')
+            .doc(user.uid)
+            .collection('cart_items')
+            .add({
+          'workerId': worker.uid,
+          'jobType': worker.jobType,
+          'worker-name': worker.userName,
+        });
+        Fluttertoast.showToast(
+          msg: "${worker.userName} added to cart successfully",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      } catch (e) {
+        // Handle errors if adding to the cart fails
+        Fluttertoast.showToast(
+          msg: "Failed to add ${worker.userName} to the cart",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      }
+    } else {
+      // Handle the case where the user is not authenticated
+      Fluttertoast.showToast(
+        msg: "You need to sign in to add to the cart",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
   }
 
-  void removeFromCart(ServantModel worker) {
-    setState(() {
-      selectedWorkers.remove(worker);
-    });
-    Fluttertoast.showToast(
-      msg: "Worker removed from cart",
-      toastLength: Toast.LENGTH_SHORT,
-    );
-  }
+  void placeOrder(ServantModel worker) {
+    final user = FirebaseAuth.instance.currentUser;
 
-  void navigateToCartPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CartPage(selectedWorkers: selectedWorkers),
-      ),
-    ).then((value) {
-      // Clear the selectedWorkers list when returning from CartPage
-      selectedWorkers.clear();
-    });
+    if (user != null) {
+      try {
+        final CollectionReference ordersCollection =
+        FirebaseFirestore.instance.collection('orders');
+        final timestamp = DateTime.now();
+        ordersCollection.add({
+          'workerId': worker.uid,
+          'jobType': worker.jobType,
+          'workerName': worker.userName,
+          'userId': user.uid,
+          'userName': user.displayName,
+          'timestamp': timestamp,
+        });
+
+        Fluttertoast.showToast(
+          msg: "Order for ${worker.userName} confirmed.",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: "Failed to place an order for ${worker.userName}.",
+          toastLength: Toast.LENGTH_SHORT,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "You need to sign in to place an order.",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    }
   }
 }

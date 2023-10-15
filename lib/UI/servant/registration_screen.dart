@@ -384,11 +384,16 @@ class _ServantRegisterPageState extends State<ServantRegisterPage> {
         .set(servantModel.toMap());
 
     Fluttertoast.showToast(msg: "Account created successfully :) ");
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => AcceptRejectPage()),
-          (route) => route.isFirst,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>  AcceptRejectPage(),
+      ),
     );
+
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => AcceptRejectPage()),
+    //       (route) => route.isFirst,
+    // );
   }
 }

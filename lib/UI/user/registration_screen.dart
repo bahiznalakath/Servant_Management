@@ -32,7 +32,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
           'User Register Page',
           style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: const   Color(0xffe76f86),
+        backgroundColor: const Color(0xffe76f86),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -281,27 +281,24 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   }
 
   postDetailsToFirestore() async {
-    // calling our firestorm
-    // calling our user model
-    // sending these values
+    // calling our firestorm  // sending these values  // calling our user model
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
-
     UserModel userModel =
         UserModel(uid: '', userName: '', email: '', password: '');
-
     // writing all the values
     userModel.email = user!.email;
     userModel.uid = user.uid;
     userModel.userName = _userNameTextController.text;
     userModel.password = _passwordTextController.text;
-
     await firebaseFirestore
         .collection("users")
         .doc(user.uid)
         .set(userModel.toMap());
     Fluttertoast.showToast(msg: "Account created successfully :) ");
-
+    print('User:${user.displayName}');
+    print('UserAdditionalInfo: ${user.sendEmailVerification()}');
+    print("Login successful with google");
     Navigator.pushAndRemoveUntil(
         (context),
         MaterialPageRoute(builder: (context) => CategoriesList()),

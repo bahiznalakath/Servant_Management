@@ -1,40 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AdminDashboard extends StatefulWidget {
-  const AdminDashboard({Key? key}) : super(key: key);
-
+class ServantManagementPage extends StatefulWidget {
   @override
-  _AdminDashboardState createState() => _AdminDashboardState();
+  _ServantManagementPageState createState() => _ServantManagementPageState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> {
+class _ServantManagementPageState extends State<ServantManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
-        bottom: const TabBar(
-          tabs: [
-            Tab(text: 'Manage Users'),
-            Tab(text: 'Manage Servants'),
-            Tab(text: 'view total bookings',)
-          ],
+        title: Text(
+          'Manage Servants',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
+        backgroundColor: Color(0xffe76f86),
       ),
-      body: const TabBarView(
-        children: [
-          // Content for managing users
-          Center(
-            child: Text('User Management Content'),
-          ),
-          // Content for managing servants
-          Center(
-            child: Text('Servant Management Content'),
-          ),
-          Center(
-            child: Text('Servant and User view total bookings  Content'),
-          ),
-        ],
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('servants').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator(); // Display a loading indicator while fetching data.
+          }
+
+          var servantDocuments = snapshot.data!.docs;
+          var totalServants = servantDocuments.length;
+
+          // Assuming you want to display details of all servants in a ListView
+          return ListView.builder(
+            itemCount: totalServants,
+            itemBuilder: (context, index) {
+              var servant = servantDocuments[index]
+                  .data(); // Get all fields of the servant
+              return Card(
+                child: ListTile(
+                  title: Text(servant['userName']),
+                  subtitle: Text(servant['jobType']),
+                  trailing: Text('Experience: ${servant['experience']}'),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

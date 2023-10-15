@@ -31,7 +31,7 @@ class MyDialog extends StatelessWidget {
           child: TextButton(
             child: const Text('AdminLogin'),
             onPressed: () {
-              Navigator.of(context).push(
+              Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => const AdminLogin()));
             },
           ),

@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:servantmanagement/UI/servant/serventdrawerpage.dart';
-// pass order conferm from page of user  workers deta
+
 class AcceptRejectPage extends StatefulWidget {
   const AcceptRejectPage({Key? key}) : super(key: key);
 
@@ -9,72 +11,93 @@ class AcceptRejectPage extends StatefulWidget {
 }
 
 class _AcceptRejectPageState extends State<AcceptRejectPage> {
-  // Dummy list of orders for demonstration
-  final List<Order> orders = [
-    Order(id: 1, name: 'Order 1', description: 'Description of Order 1'),
-    Order(id: 2, name: 'Order 2', description: 'Description of Order 2'),
-    // Add more orders here
-  ];
+  Stream<QuerySnapshot>? orderStream;
+
+  @override
+  void initState() {
+    super.initState();
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    orderStream = FirebaseFirestore.instance
+        .collection('orders')
+        .where('workerName', isEqualTo: firebaseUser?.displayName)
+        .snapshots();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orders'),
+        title: const Text(
+          'Orders from Users',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xffe76f86),
+        centerTitle: true,
       ),
       drawer: const ServentDrawerPage(),
       body: Container(
         height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Color(0xffe76f86),
-            Color(0xffd3bde5),
-          ]),
+          gradient: LinearGradient(
+            colors: [
+              Color(0xffe76f86),
+              Color(0xffd3bde5),
+            ],
+          ),
         ),
-        child: ListView.builder(
-          itemCount: orders.length,
-          itemBuilder: (BuildContext context, int index) {
-            final order = orders[index];
-            return ListTile(
-              title: Text(order.name),
-              subtitle: Text(order.description),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.check),
-                    color: Colors.green,
-                    onPressed: () {
-                      // Implement logic to accept the order here
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    color: Colors.red,
-                    onPressed: () {
-                      // Implement logic to reject the order here
-                    },
-                  ),
-                ],
-              ),
-            );
+        child: StreamBuilder(
+          stream: orderStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              final orders = snapshot.data!.docs;
+              return ListView.builder(
+                itemCount: orders.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final order = orders[index];
+                  final orderData = order.data() as Map<String, dynamic>;
+                  return Card(
+                    child: ListTile(
+                      title: Text(
+                        orderData['workerName'] ?? '',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                      subtitle: Text(orderData['jobType'] ?? ''),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.check, size: 35),
+                            color: Colors.green,
+                            onPressed: () {
+                              // Implement logic for accepting the order here
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, size: 35),
+                            color: Colors.red,
+                            onPressed: () {
+                              // Implement logic for rejecting the order here
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
           },
         ),
       ),
     );
   }
-}
-
-class Order {
-  final int id;
-  final String name;
-  final String description;
-
-  Order({
-    required this.id,
-    required this.name,
-    required this.description,
-  });
 }

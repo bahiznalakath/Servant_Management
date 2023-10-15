@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'AdminDashboard.dart';
 import 'manage_servants_screen.dart';
 
 class AdminLogin extends StatefulWidget {
@@ -31,15 +32,14 @@ class _AdminLoginState extends State<AdminLogin> {
           ),
           child: const Padding(
               padding: EdgeInsets.only(top: 60.0, left: 22),
-              child:Text(
+              child: Text(
                 'Admin Login\n You can Manage user and servant',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-              )
-          ),
+              )),
         ),
         Padding(
             padding: const EdgeInsets.only(top: 200.0),
@@ -124,7 +124,6 @@ class _AdminLoginState extends State<AdminLogin> {
                         controller: _passwordTextController,
                         obscureText: true,
                         validator: (value) {
-
                           if (value!.isEmpty) {
                             return "Password is required for login";
                           }
@@ -200,10 +199,11 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   Future<void> _signIn(BuildContext context) async {
-    final panelCode = _userNameTextController.text.trim();
+    final userName =
+        _userNameTextController.text.trim(); // Change panelCode to userName
     final password = _passwordTextController.text.trim();
 
-    if (panelCode.isEmpty || password.isEmpty) {
+    if (userName.isEmpty || password.isEmpty) {
       Fluttertoast.showToast(
         msg: "Both Admin Username and Password are required",
         toastLength: Toast.LENGTH_SHORT,
@@ -213,7 +213,7 @@ class _AdminLoginState extends State<AdminLogin> {
 
     final adminRef = FirebaseFirestore.instance.collection('adminLogin');
     final querySnapshot = await adminRef
-        .where('userName', isEqualTo: panelCode)
+        .where('userName', isEqualTo: userName) // Change panelCode to userName
         .where('password', isEqualTo: password)
         .get();
 

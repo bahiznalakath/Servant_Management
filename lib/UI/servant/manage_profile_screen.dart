@@ -1,304 +1,157 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ServantDetailsPage extends StatelessWidget {
-  const ServantDetailsPage({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Servant Details'),
-        centerTitle: true,
-        backgroundColor:  const Color(0xffe76f86),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xffe76f86),
-              Color(0xffd3bde5),
-            ],
-          ),
-        ),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('servants').snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            if (!snapshot.hasData) {
-              return const Text('No data available');
-            }
-
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                final userData = snapshot.data!.docs[index].data() as Map<
-                    String,
-                    dynamic>;
-                final username = userData['userName'] ?? 'N/A';
-                final email = userData['email'] ?? 'N/A';
-                final jobType = userData['jobType'] ?? 'N/A';
-                final experience = userData['experience'] ?? 'N/A';
-
-                return ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [ Center(
-                        child: Column(
-                          children: [
-                            const CircleAvatar(
-                              radius: 55,
-                              child: Icon(
-                                Icons.person,
-                                size: 45,
-                              ),
-                            ),
-                            Text(
-                              ' $username',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],)),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Email: $email',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Job Type: $jobType',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Experience: $experience years',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
-                        ),
-                      ),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      // Navigate to the editing page with the selected document ID
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditServantPage(
-                                documentId: snapshot.data!.docs[index].id,
-                                userData: userData,
-                              ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-
-    );
-  }
-}
-
-class EditServantPage extends StatefulWidget {
-  final String documentId;
-  final Map<String, dynamic> userData;
-
-  const EditServantPage({super.key, required this.documentId, required this.userData});
+class ServantDetailsPage extends StatefulWidget {
+  const ServantDetailsPage({Key? key}) : super(key: key);
 
   @override
-  _EditServantPageState createState() => _EditServantPageState();
+  _ServantDetailsPageState createState() => _ServantDetailsPageState();
 }
 
-class _EditServantPageState extends State<EditServantPage> {
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController jobTypeController = TextEditingController();
-  TextEditingController experienceController = TextEditingController();
+class _ServantDetailsPageState extends State<ServantDetailsPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String username = '';
+  String email = '';
+  String jobType = '';
+  int experience = 0; // Changed experience to an integer.
 
   @override
   void initState() {
     super.initState();
-    // Initialize the text controllers with existing data
-    usernameController.text = widget.userData['userName'] ?? '';
-    emailController.text = widget.userData['email'] ?? '';
-    jobTypeController.text = widget.userData['jobType'] ?? '';
-    experienceController.text = widget.userData['experience'] != null
-        ? widget.userData['experience'].toString()
-        : '';
+    _fetchUserData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Servant',style: TextStyle(fontWeight: FontWeight.bold),),
-        backgroundColor:   const Color(0xffe76f86),
+        title: const Text('Manage Your Servant Details',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        backgroundColor: const Color(0xffe76f86),
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xffe76f86),
-              Color(0xffd3bde5),
-            ],
+            colors: [Color(0xffe76f86), Color(0xffd3bde5)],
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 23.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextFormField(
-                      controller: usernameController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Username',
-                        labelText: 'Username',
+        child: ListView( // Use ListView instead of Form and ListTile
+          padding: const EdgeInsets.all(20),
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Center(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const CircleAvatar(
+                      radius: 55,
+                      child: Icon(
+                        Icons.person,
+                        size: 45,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 23.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextFormField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Email',
-                        labelText: 'Email',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter email address';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 23.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextFormField(
-                      controller: jobTypeController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Job Type',
-                        labelText: 'Job Type',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 23.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextFormField(
-                      controller: experienceController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Experience (years)',
-                        labelText: 'Experience (years)',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Update the Firestore document with the new data
-                  FirebaseFirestore.instance.collection('servantS').doc(
-                      widget.documentId).update({
-                    'userName': usernameController.text,
-                    'email': emailController.text,
-                    'jobType': jobTypeController.text,
-                    'experience': int.tryParse(experienceController.text),
-                  });
 
-                  Navigator.pop(context); // Return to the previous page
-                },
-                child: const Text('Save Changes'),
+                    Text(
+                      username,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Text(
+                  'Email: ',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                Text(
+                  email,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Job Type: ${jobType}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+              ),
+            ),
+
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Text(
+                  'Experience: ${experience} years',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // // Navigate to the editing page.
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => EditServantPage(), // Pass the necessary data to the editing page.
+                //   ),
+                // );
+              },
+              child: const Text('Edit Details'),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  _fetchUserData() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser != null) {
+      await FirebaseFirestore.instance
+          .collection('servants')
+          .doc(firebaseUser.uid)
+          .get()
+          .then((ds) {
+        setState(() {
+          email = ds.data()?['email'] ?? '';
+          username = ds.data()?['userName'] ?? '';
+          jobType = ds.data()?['jobType'] ?? '';
+          experience = ds.data()?['experience'] ?? 0;
+        });
+      }).catchError((e) {
+        print(e);
+      });
+    }
   }
 }
