@@ -58,16 +58,14 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                     ),
                     const Text(
                       "Hello There!",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     const Text(
                       "Register With Your Details!",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(
                       height: 30.0,
@@ -151,7 +149,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter password';
+                                return 'Please enter a password';
                               }
                               return null;
                             },
@@ -166,18 +164,7 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: GestureDetector(
                         onTap: () async {
-                          signUp(_userNameTextController.text,
-                              _passwordTextController.text);
-                          Fluttertoast.showToast(
-                              msg: "Account  Created Successful ");
-                          if (kDebugMode) {
-                            print("Log In successfully");
-                          }
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CategoriesList()));
+                          signUp(_userNameTextController.text, _passwordTextController.text);
                         },
                         child: Container(
                           padding: const EdgeInsets.all(20.0),
@@ -245,12 +232,11 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
   void signUp(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       try {
-        await _auth
-            .createUserWithEmailAndPassword(email: email, password: password)
-            .then((value) => {postDetailsToFirestore()})
-            .catchError((e) {
-          Fluttertoast.showToast(msg: e!.message);
-        });
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        postDetailsToFirestore(userCredential);
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
           case "invalid-email":
@@ -280,28 +266,23 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
     }
   }
 
-  postDetailsToFirestore() async {
-    // calling our firestorm  // sending these values  // calling our user model
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    User? user = _auth.currentUser;
-    UserModel userModel =
-        UserModel(uid: '', userName: '', email: '', password: '');
-    // writing all the values
-    userModel.email = user!.email;
-    userModel.uid = user.uid;
-    userModel.userName = _userNameTextController.text;
-    userModel.password = _passwordTextController.text;
-    await firebaseFirestore
+  void postDetailsToFirestore(UserCredential userCredential) async {
+    User? user = userCredential.user;
+    UserModel userModel = UserModel(
+      uid: user!.uid,
+      userName: _userNameTextController.text,
+      email: user.email!,
+      password: _passwordTextController.text,
+    );
+    await FirebaseFirestore.instance
         .collection("users")
         .doc(user.uid)
         .set(userModel.toMap());
-    Fluttertoast.showToast(msg: "Account created successfully :) ");
-    print('User:${user.displayName}');
-    print('UserAdditionalInfo: ${user.sendEmailVerification()}');
-    print("Login successful with google");
+    Fluttertoast.showToast(msg: "Account created successfully :)");
     Navigator.pushAndRemoveUntil(
-        (context),
-        MaterialPageRoute(builder: (context) => CategoriesList()),
-        (route) => false);
+      context,
+      MaterialPageRoute(builder: (context) => const CategoriesList()),
+          (route) => false,
+    );
   }
 }

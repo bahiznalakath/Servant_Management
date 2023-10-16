@@ -46,13 +46,21 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
           child: ListView(
             children: <Widget>[
               const SizedBox(height: 20),
-              const Center(
-                child: CircleAvatar(
-                  radius: 50,
-                  child: Icon(
-                    Icons.person,
-                    size: 45,
-                  ),
+              Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      child: Icon(
+                        Icons.person,
+                        size: 45,
+                      ),
+                    ),
+                    Text(
+                      username,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -64,25 +72,38 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  Text(
-                    'Username:',
-                    style: const TextStyle(fontSize: 20),
+                  Row(
+                    children: [
+                      Text(
+                        'Username:',
+                        style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(width: 4,),
+                      if (_isEditing)
+                        Expanded(
+                          child: TextFormField(
+                            controller: _usernameController,
+                            decoration: InputDecoration(hintText: username),
+                          ),
+                        ),
+                      if (!_isEditing)
+                        Text(
+                          username,
+                          style: TextStyle(fontSize: 20),
+                        ),
+                    ],
                   ),
-                  if (_isEditing)
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(hintText: username),
-                    ),
-                  if (!_isEditing)
-                    Text(
-                      username,
-                      style: TextStyle(fontSize: 20),
-                    ),
+
                   SizedBox(
                     height: 15,
                   ),
-                  Text('Email:', style: const TextStyle(fontSize: 20)),
-                  Text(myEmail), // Display the user's email.
+                  Row(
+                    children: [
+                      Text('Email:', style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                      Text(myEmail,style: TextStyle(fontSize: 20),),
+                    ],
+                  ),
+                 // Display the user's email.
                   const SizedBox(
                     height: 20,
                     width: 20,

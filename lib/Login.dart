@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'UI/more_about.dart';
 import 'UI/servant/login_screen.dart';
@@ -27,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // const SizedBox(height: 50,),
             const Spacer(),
             const Padding(
               padding: EdgeInsets.all(20.0),

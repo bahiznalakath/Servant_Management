@@ -22,51 +22,73 @@ class _SplashScreenState extends State<SplashScreen> {
     _navigateToNextScreen();
   }
 
+  Future<String> getUserTypeFromDatabase(User user) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    DocumentReference userRef = firestore.collection('users').doc(user.uid);
+
+    try {
+      DocumentSnapshot snapshot = await userRef.get();
+
+      if (snapshot.exists) {
+        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
+        if (userData.containsKey('userType')) {
+          String userType = userData['userType'];
+          return userType;
+        } else {
+          return 'unknown'; // Handle the case where the 'userType' field does not exist.
+        }
+      } else {
+        return 'unknown'; // Handle the case where the user document does not exist.
+      }
+    } catch (e) {
+      print("Error retrieving user type: $e");
+      return 'unknown'; // Handle errors appropriately.
+    }
+  }
+
   Future<void> _navigateToNextScreen() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
 
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (user == null) {
-      // User is not logged in, navigate to the login page.
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-    } else {
-      String userType = await getUserTypeFromDatabase(user);
-
-      if (userType == 'user') {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => CategoriesList(),
-          ),
-        );
-      } else if (userType == 'servant') {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => AcceptRejectPage(),
-          ),
-        );
-      } else if (userType == 'admin') {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => AdminDashboard(),
-          ),
-        );
-      } else {
-        // Handle other user types or show an appropriate message.
-        // You may navigate to a default page or display an error message.
-        // For example:
+    await Future.delayed(const Duration(seconds: 3)).then((value) async {
+      if (user == null) {
+        // User is not logged in, navigate to the login page.
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => LoginPage(),
           ),
         );
+      } else {
+        String userType = await getUserTypeFromDatabase(user);
+
+        if (userType == 'user') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => CategoriesList(),
+            ),
+          );
+        } else if (userType == 'servant') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => AcceptRejectPage(),
+            ),
+          );
+        } else if (userType == 'admin') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => AdminDashboard(),
+            ),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+          );
+        }
       }
-    }
+    });
   }
 
   @override
@@ -120,30 +142,5 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
-  }
-
-  Future<String> getUserTypeFromDatabase(User user) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    DocumentReference userRef = firestore.collection('users').doc(user.uid);
-
-    try {
-      DocumentSnapshot snapshot = await userRef.get();
-
-      if (snapshot.exists) {
-        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
-        if (userData.containsKey('userType')) {
-          String userType = userData['userType'];
-          return userType;
-        } else {
-          return 'unknown'; // Handle the case where the 'userType' field does not exist.
-        }
-      } else {
-        return 'unknown'; // Handle the case where the user document does not exist.
-      }
-    } catch (e) {
-      print("Error retrieving user type: $e");
-      return 'unknown'; // Handle errors appropriately.
-    }
   }
 }
