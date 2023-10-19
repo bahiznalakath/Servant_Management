@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Firebase/Model/user_model.dart';
 import 'category_screen.dart';
 import 'login_screen.dart';
@@ -164,6 +165,8 @@ class _UserRegisterPageState extends State<UserRegisterPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: GestureDetector(
                         onTap: () async {
+                          SharedPreferences pref =
+                          await SharedPreferences.getInstance();
                           signUp(_userNameTextController.text, _passwordTextController.text);
                         },
                         child: Container(

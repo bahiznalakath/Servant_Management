@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:servantmanagement/UI/servant/view_history_screen.dart';
 import '../../Login.dart';
 import '../more_about.dart';
+import 'History.dart';
 import 'manage_profile_screen.dart';
 
 class ServentDrawerPage extends StatefulWidget {
@@ -61,7 +64,15 @@ class _ServentDrawerPageState extends State<ServentDrawerPage> {
               child: ListTile(
                 leading: const Icon(Icons.history,color: Colors.black,), // Add the icon for history
                 title: const Text('History of Works',style: TextStyle(fontWeight: FontWeight.bold),),
-                onTap: () {},
+                onTap: () async {
+                  Fluttertoast.showToast(msg: "History of your Works");
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) =>HistoryMainPage(),
+                  ),
+                  );
+                },
               ),
             ),
 

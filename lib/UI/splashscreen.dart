@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:servantmanagement/UI/servant/accept_reject_screen.dart';
 import 'package:servantmanagement/UI/user/category_screen.dart';
 import 'admin/AdminDashboard.dart';
 import 'admin/manage_servants_screen.dart';
 import '../Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -19,77 +21,47 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToNextScreen();
-  }
 
-  Future<String> getUserTypeFromDatabase(User user) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    DocumentReference userRef = firestore.collection('users').doc(user.uid);
-
-    try {
-      DocumentSnapshot snapshot = await userRef.get();
-
-      if (snapshot.exists) {
-        Map<String, dynamic> userData = snapshot.data() as Map<String, dynamic>;
-        if (userData.containsKey('userType')) {
-          String userType = userData['userType'];
-          return userType;
-        } else {
-          return 'unknown'; // Handle the case where the 'userType' field does not exist.
+    Future.delayed(const Duration(seconds: 3), () async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var type = prefs.getString('type');
+      print(type);
+      if (type != null) {
+        switch (type) {
+          case 'users':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => CategoriesList(),
+              ),
+            );
+            break;
+          case 'servant':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => AcceptRejectPage(),
+              ),
+            );
+            break;
+          case 'admin':
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => AdminDashboard(),
+              ),
+            );
+            break;
+          default:
+          // The user's type is invalid. Navigate to the LoginPage screen.
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+            break;
         }
       } else {
-        return 'unknown'; // Handle the case where the user document does not exist.
-      }
-    } catch (e) {
-      print("Error retrieving user type: $e");
-      return 'unknown'; // Handle errors appropriately.
-    }
-  }
-
-  Future<void> _navigateToNextScreen() async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
-
-    await Future.delayed(const Duration(seconds: 3)).then((value) async {
-      if (user == null) {
-        // User is not logged in, navigate to the login page.
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          ),
-        );
-      } else {
-        String userType = await getUserTypeFromDatabase(user);
-
-        if (userType == 'user') {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => CategoriesList(),
-            ),
-          );
-        } else if (userType == 'servant') {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => AcceptRejectPage(),
-            ),
-          );
-        } else if (userType == 'admin') {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => AdminDashboard(),
-            ),
-          );
-        } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-          );
-        }
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
       }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {

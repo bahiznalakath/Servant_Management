@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../reusable_widgets/simple.dart';
 import 'category_screen.dart';
 import 'registration_screen.dart';
@@ -196,7 +197,9 @@ class _UserLoginState extends State<UserLogin> {
                           height: 100,
                           width: 300,
                           child: GestureDetector(
-                            onTap: () {
+                            onTap: () async {
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
                               _handlegooglebuttonClick();
                               print('Google Sign Successfully');
                             },
@@ -238,6 +241,8 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   void _login() async {
+    SharedPreferences pref =
+    await SharedPreferences.getInstance();
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(

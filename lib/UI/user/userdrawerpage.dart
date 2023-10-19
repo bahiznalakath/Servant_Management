@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:servantmanagement/UI/user/history/conform.dart';
 import '../../Login.dart';
+import 'history/History.dart';
 import 'manage_profile_screen.dart';
 import '../more_about.dart';
 
@@ -95,12 +98,20 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
                   'History of Orders',
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
                 ),
-                onTap: () {},
+                onTap: () async {
+                  Fluttertoast.showToast(msg: "History of your Orders");
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HistoryOfOrders(),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(
               height: 10,
-            ), 
+            ),
             Card(
               child: ListTile(
                 leading: const Icon(
@@ -111,8 +122,9 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
                   'Exit',
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
                 ),
-                onTap: () {
-                  SystemNavigator.pop();
+                onTap: () async {
+                  Fluttertoast.showToast(msg: "Exit from Servant App");
+                  await SystemNavigator.pop();
                 },
               ),
             ),
@@ -130,13 +142,14 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
                 ),
                 onTap: () {
-                  signOut().then((_) {
-                    Navigator.of(context).pushReplacement(
+                  signOut().then((_) async {
+                    await Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) =>
                             const LoginPage(), // Replace with your login screen widget
                       ),
                     );
+                    Fluttertoast.showToast(msg: "Welcome to Login Screen");
                   });
                 },
               ),
@@ -163,6 +176,7 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
 
   Future<void> signOut() async {
     try {
+      Fluttertoast.showToast(msg: "SignOut your account");
       await FirebaseAuth.instance.signOut();
     } catch (e) {
       if (kDebugMode) {

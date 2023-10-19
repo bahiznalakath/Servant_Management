@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servantmanagement/UI/servant/serventdrawerpage.dart';// Corrected the import statement
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:servantmanagement/UI/servant/serventdrawerpage.dart';
 
 class AcceptRejectPage extends StatefulWidget {
   const AcceptRejectPage({Key? key}) : super(key: key);
@@ -16,9 +17,7 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
   String email = '';
   String jobType = '';
   int experience = 0;
-  String username = '';
-  String userId = '';
-  int timestamp = 0;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -31,7 +30,7 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Bookings from Users to $servantname', // Removed unnecessary {}
+          'Bookings from Users to $servantname',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xffe76f86),
@@ -68,35 +67,54 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
                   final order = orders[index];
                   final orderData = order.data() as Map<String, dynamic>;
                   return Card(
+                    elevation: 9,
                     child: ListTile(
                       title: Text("You have a booking for $jobType"),
                       subtitle: Column(
                         children: [
                           Text(
                             orderData['userName'] ?? '',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 25),
                           ),
                         ],
                       ),
-                      trailing: Row(
+                      trailing: isLoading
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.check, size: 35),
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    acceptOrder(
+                                        order.id, orderData['userName']);
+                                    Fluttertoast.showToast(
+                                        msg: "Accepted Booking");
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.close, size: 35),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    rejectOrder(
+                                        order.id, orderData['userName']);
+                                    Fluttertoast.showToast(
+                                        msg: "Reject Booking");
+                                  },
+                                ),
+                              ],
+                            )
+                          : Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.check, size: 35),
-                            color: Colors.green,
-                            onPressed: () {
-                              // Implement logic for accepting the order here
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.close, size: 35),
-                            color: Colors.red,
-                            onPressed: () {
-                              // Implement logic for rejecting the order here
-                            },
-                          ),
-                        ],
-                      ),
+                              children: [
+                                Text("Booking Conformed"),
+                                Icon(Icons.check, size: 45,color: Colors.green,)
+                              ],
+                            ),
                     ),
                   );
                 },
@@ -121,7 +139,7 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
           servantname = ds.data()?['userName'] ?? '';
           jobType = ds.data()?['jobType'] ?? '';
           experience = ds.data()?['experience'] ?? 0;
-          _setupOrderStream(); // Call to set up the orderStream after user data is fetched
+          _setupOrderStream();
         });
       }).catchError((e) {
         print(e);
@@ -129,8 +147,6 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
     }
   }
 
-  // Function to set up the Firestore query after user data is fetched
-  // Function to set up the Firestore query after user data is fetched
   void _setupOrderStream() {
     orderStream = FirebaseFirestore.instance
         .collection('orders')
@@ -139,4 +155,28 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
         .snapshots();
   }
 
+  void acceptOrder(String orderId, String userName) async {
+    await FirebaseFirestore.instance.collection('confirmed_orders').add({
+      'orderId': orderId,
+      'servantName': servantname,
+      'userName': userName,
+      'jobType': jobType,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    // You can add more logic here as needed.
+  }
+
+  void rejectOrder(String orderId, String userName) async {
+    await FirebaseFirestore.instance.collection('reject_orders').add({
+      'orderId': orderId,
+      'servantName': servantname,
+      'userName': userName,
+      'jobType': jobType,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    // Remove the order from the original orders collection
+    await FirebaseFirestore.instance.collection('orders').doc(orderId).delete();
+  }
 }

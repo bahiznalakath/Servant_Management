@@ -27,7 +27,7 @@ class _CategoriesListState extends State<CategoriesList> {
   final List<IconData> _jobTypeIcons = [
     Icons.cookie_outlined, // You can replace these with the desired icons
     Icons.home,
-    Icons.person,
+
     Icons.pets,
     Icons.face
   ];

@@ -22,7 +22,6 @@ class MyDialog extends StatelessWidget {
                 '2. Client: Provides a platform for clients to connect with and hire servants.'),
             Text(
                 '3. Admin: Admins have separate login credentials to manage the application.'),
-            // Add more project details here as needed.
           ],
         ),
       ),
@@ -31,8 +30,10 @@ class MyDialog extends StatelessWidget {
           child: TextButton(
             child: const Text('AdminLogin'),
             onPressed: () {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const AdminLogin()));
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const AdminLogin()),
+                    (_) => true,
+              );
             },
           ),
         ),

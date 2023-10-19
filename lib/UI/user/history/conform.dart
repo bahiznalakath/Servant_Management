@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HistoryOfWorks extends StatefulWidget {
-  const HistoryOfWorks({Key? key}) : super(key: key);
+class HistoryOfConfirmed extends StatefulWidget {
+  const HistoryOfConfirmed({Key? key}) : super(key: key);
 
   @override
-  _HistoryOfWorksState createState() => _HistoryOfWorksState();
+  _HistoryOfConfirmedState createState() => _HistoryOfConfirmedState();
 }
 
-class _HistoryOfWorksState extends State<HistoryOfWorks> {
+class _HistoryOfConfirmedState extends State<HistoryOfConfirmed> {
   String myEmail = "";
   String username = "";
   List<Map<String, dynamic>> confirmedOrders = [];
@@ -26,7 +26,7 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
     if (firebaseUser != null) {
       try {
         final ds = await FirebaseFirestore.instance
-            .collection('servants')
+            .collection('users')
             .doc(firebaseUser.uid)
             .get();
         setState(() {
@@ -63,14 +63,6 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "History of Works",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xffe76f86),
-      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -83,19 +75,19 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
         child: isLoading
             ? Container(child: Center(child: CircularProgressIndicator())) // Show a loading indicator
             : ListView.builder(
-          itemCount: confirmedOrders.length,
-          itemBuilder: (BuildContext context, int index) {
-            var order = confirmedOrders[index];
-            return Card(
-              elevation: 8,
-              margin: EdgeInsets.all(8),
-              child: ListTile(
-                title: Text("Confirmed Works ID: ${order['orderId']}"),
-                subtitle: Text("The user Name: ${order['servantName']}"),
-              ),
-            );
-          },
-        ),
+              itemCount: confirmedOrders.length,
+              itemBuilder: (BuildContext context, int index) {
+                var order = confirmedOrders[index];
+                return Card(
+                  elevation: 8,
+                  margin: EdgeInsets.all(8),
+                  child: ListTile(
+                    title: Text("Confirmed Orders ID: ${order['orderId']}"),
+                    subtitle: Text("The Servant Name: ${order['servantName']}"),
+                  ),
+                );
+              },
+            ),
       ),
     );
   }

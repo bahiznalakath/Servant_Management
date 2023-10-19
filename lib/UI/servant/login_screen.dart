@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:servantmanagement/UI/servant/accept_reject_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'registration_screen.dart';
 
 class ServantLogin extends StatefulWidget {
@@ -185,7 +186,9 @@ class _ServantLoginState extends State<ServantLogin> {
                           children: [
                             const Text("Don't have an account yet ?"),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                SharedPreferences pref =
+                                    await SharedPreferences.getInstance();
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

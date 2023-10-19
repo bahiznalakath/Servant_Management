@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:servantmanagement/UI/servant/accept_reject_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Firebase/Model/servant_model.dart';
 import 'login_screen.dart';
 
@@ -240,7 +241,9 @@ class _ServantRegisterPageState extends State<ServantRegisterPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
                           signUp(
                             _emailController.text,
                             _nameController.text,

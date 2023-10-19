@@ -6,7 +6,7 @@ class EditServantPage extends StatefulWidget {
   final String documentId;
   final Map<String, dynamic> userData;
 
-  const EditServantPage({super.key, required this.documentId, required this.userData});
+  const EditServantPage({super.key, required this.documentId, required this.userData, });
 
   @override
   _EditServantPageState createState() => _EditServantPageState();

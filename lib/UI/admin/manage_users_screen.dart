@@ -1,17 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class UserManagementPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Manage Users',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xffe76f86),
-      ),
+
       body: UserList(),
     );
   }
@@ -34,10 +29,11 @@ class UserList extends StatelessWidget {
             final userData = userList[index].data() as Map<String, dynamic>;
             final userName = userData['userName'];
             final userEmail = userData['email'];
+            final password = userData['password'];
 
             return ListTile(
-              title: Text(userName),
-              subtitle: Text(userEmail),
+              title: Text('username :${userName}'),
+              subtitle: Text(' Email :${userEmail} \n Password : ${password}'),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
@@ -45,6 +41,7 @@ class UserList extends StatelessWidget {
                       .collection('users')
                       .doc(userList[index].id)
                       .delete();
+                  Fluttertoast.showToast(msg: " User ${userName}deleted Successful ");
                 },
               ),
             );

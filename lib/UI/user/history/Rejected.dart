@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HistoryOfWorks extends StatefulWidget {
-  const HistoryOfWorks({Key? key}) : super(key: key);
+class HistoryOfRejected extends StatefulWidget {
+  const HistoryOfRejected({Key? key}) : super(key: key);
 
   @override
-  _HistoryOfWorksState createState() => _HistoryOfWorksState();
+  _HistoryOfRejectedState createState() => _HistoryOfRejectedState();
 }
 
-class _HistoryOfWorksState extends State<HistoryOfWorks> {
+class _HistoryOfRejectedState extends State<HistoryOfRejected> {
   String myEmail = "";
   String username = "";
   List<Map<String, dynamic>> confirmedOrders = [];
@@ -26,7 +26,7 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
     if (firebaseUser != null) {
       try {
         final ds = await FirebaseFirestore.instance
-            .collection('servants')
+            .collection('users')
             .doc(firebaseUser.uid)
             .get();
         setState(() {
@@ -44,7 +44,7 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
   _fetchConfirmedOrders() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('confirmed_orders')
+          .collection('reject_orders')
           .where('userName', isEqualTo: username)
           .get();
 
@@ -63,14 +63,6 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "History of Works",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xffe76f86),
-      ),
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -87,11 +79,11 @@ class _HistoryOfWorksState extends State<HistoryOfWorks> {
           itemBuilder: (BuildContext context, int index) {
             var order = confirmedOrders[index];
             return Card(
-              elevation: 8,
+              elevation: 10,
               margin: EdgeInsets.all(8),
               child: ListTile(
-                title: Text("Confirmed Works ID: ${order['orderId']}"),
-                subtitle: Text("The user Name: ${order['servantName']}"),
+                title: Text("Rejected Orders ID: ${order['orderId']}"),
+                subtitle: Text("The Servant Name: ${order['servantName']}"),
               ),
             );
           },
