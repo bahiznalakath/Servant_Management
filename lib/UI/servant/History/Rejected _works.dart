@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HistoryOfConfirmed extends StatefulWidget {
-  const HistoryOfConfirmed({Key? key}) : super(key: key);
+class HistoryOfWorksRejected extends StatefulWidget {
+  const HistoryOfWorksRejected({Key? key}) : super(key: key);
 
   @override
-  _HistoryOfConfirmedState createState() => _HistoryOfConfirmedState();
+  _HistoryOfWorksRejectedState createState() => _HistoryOfWorksRejectedState();
 }
 
-class _HistoryOfConfirmedState extends State<HistoryOfConfirmed> {
+class _HistoryOfWorksRejectedState extends State<HistoryOfWorksRejected> {
   String myEmail = "";
   String username = "";
   List<Map<String, dynamic>> confirmedOrders = [];
@@ -75,19 +75,19 @@ class _HistoryOfConfirmedState extends State<HistoryOfConfirmed> {
         child: isLoading
             ? Container(child: Center(child: CircularProgressIndicator())) // Show a loading indicator
             : ListView.builder(
-              itemCount: confirmedOrders.length,
-              itemBuilder: (BuildContext context, int index) {
-                var order = confirmedOrders[index];
-                return Card(
-                  elevation: 8,
-                  margin: EdgeInsets.all(8),
-                  child: ListTile(
-                    title: Text("Confirmed Orders ID: ${order['orderId']}"),
-                    subtitle: Text("The Servant Name: ${order['servantName']}"),
-                  ),
-                );
-              },
-            ),
+          itemCount: confirmedOrders.length,
+          itemBuilder: (BuildContext context, int index) {
+            var order = confirmedOrders[index];
+            return Card(
+              elevation: 8,
+              margin: EdgeInsets.all(8),
+              child: ListTile(
+                title: Text("Rejected Works ID: ${order['orderId']}"),
+                subtitle: Text("The user Name: ${order['userName']}"),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

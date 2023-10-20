@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:servantmanagement/UI/servant/view_history_screen.dart';
+import 'package:servantmanagement/UI/servant/History/confirmed_orders.dart';
 import '../../Login.dart';
 import '../more_about.dart';
-import 'History.dart';
+import 'History/History.dart';
 import 'manage_profile_screen.dart';
 
 class ServentDrawerPage extends StatefulWidget {

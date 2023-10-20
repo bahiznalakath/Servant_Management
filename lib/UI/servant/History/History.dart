@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:servantmanagement/UI/servant/view_history_screen.dart';
+
+import 'Rejected _works.dart';
+import 'confirmed_orders.dart';
 
 class HistoryMainPage extends StatelessWidget {
   @override
@@ -9,18 +11,18 @@ class HistoryMainPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xffe76f86),
-          title: Text("History Of Works",style: TextStyle(fontWeight: FontWeight.bold),),
+          title: Text("History Of Works ",style: TextStyle(fontWeight: FontWeight.bold),),
           bottom: TabBar(
             tabs: [
-              Tab(text: "Confirmed"), // First tab
-              Tab(text: "Rejected"),  // Second tab
+              Tab(text: "Confirmed Works"), // First tab
+              Tab(text: "Rejected Works"),  // Second tab
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            HistoryOfWorks(),
-            HistoryOfWorks(),
+            HistoryOfWorksConfirmed(),
+            HistoryOfWorksRejected(),
           ],
         ),
       ),
