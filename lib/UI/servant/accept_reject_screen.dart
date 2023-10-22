@@ -91,9 +91,6 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
                                         order.id, orderData['userName']);
                                     Fluttertoast.showToast(
                                         msg: "Accepted Booking");
-                                    setState(() {
-                                      isLoading = false;
-                                    });
                                   },
                                 ),
                                 IconButton(
@@ -109,10 +106,14 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
                               ],
                             )
                           : Row(
-                        mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text("Booking Conformed"),
-                                Icon(Icons.check, size: 45,color: Colors.green,)
+                                Icon(
+                                  Icons.check,
+                                  size: 45,
+                                  color: Colors.green,
+                                )
                               ],
                             ),
                     ),
@@ -163,8 +164,9 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
       'jobType': jobType,
       'timestamp': FieldValue.serverTimestamp(),
     });
-
-    // You can add more logic here as needed.
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void rejectOrder(String orderId, String userName) async {
@@ -176,7 +178,6 @@ class _AcceptRejectPageState extends State<AcceptRejectPage> {
       'timestamp': FieldValue.serverTimestamp(),
     });
 
-    // Remove the order from the original orders collection
     await FirebaseFirestore.instance.collection('orders').doc(orderId).delete();
   }
 }

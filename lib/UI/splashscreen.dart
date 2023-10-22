@@ -21,46 +21,92 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      final auth = FirebaseAuth.instance;
+      auth.authStateChanges().listen((user) {
+        if (user == null) {
+          // User not logged in
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => LoginPage()),
+                (route) => false,
+          );
+        } else {
+          // User is logged in
+          user.getIdTokenResult().then((tokenResult) {
+            final claims = tokenResult.claims;
+            final role = claims?['role'];
 
-    Future.delayed(const Duration(seconds: 3), () async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      var type = prefs.getString('type');
-      print(type);
-      if (type != null) {
-        switch (type) {
-          case 'users':
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => CategoriesList(),
-              ),
-            );
-            break;
-          case 'servant':
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => AcceptRejectPage(),
-              ),
-            );
-            break;
-          case 'admin':
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => AdminDashboard(),
-              ),
-            );
-            break;
-          default:
-          // The user's type is invalid. Navigate to the LoginPage screen.
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
-            break;
+            if (role == 'admin') {
+              // User is an admin
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => AdminDashboard()),
+                    (route) => false,
+              );
+            } else if (role == 'servant') {
+              // User is a servant
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => AcceptRejectPage()),
+                    (route) => false,
+              );
+            } else {
+              // User is a regular user
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => CategoriesList()),
+                    (route) => false,
+              );
+            }
+          });
         }
-      } else {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
-      }
+      });
     });
   }
+
+  // void initState() {
+  //   super.initState();
+  //
+  //   Future.delayed(const Duration(seconds: 3), () async {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     var type = prefs.getString('type');
+  //     print(type);
+  //     if (type != null) {
+  //       switch (type) {
+  //         case 'users':
+  //           Navigator.of(context).pushReplacement(
+  //             MaterialPageRoute(
+  //               builder: (context) => CategoriesList(),
+  //             ),
+  //           );
+  //           break;
+  //         case 'servant':
+  //           Navigator.of(context).pushReplacement(
+  //             MaterialPageRoute(
+  //               builder: (context) => AcceptRejectPage(),
+  //             ),
+  //           );
+  //           break;
+  //         case 'admin':
+  //           Navigator.of(context).pushReplacement(
+  //             MaterialPageRoute(
+  //               builder: (context) => AdminDashboard(),
+  //             ),
+  //           );
+  //           break;
+  //         default:
+  //         // The user's type is invalid. Navigate to the LoginPage screen.
+  //           Navigator.pushReplacement(context,
+  //               MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+  //           break;
+  //       }
+  //     } else {
+  //       Navigator.pushReplacement(context,
+  //           MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+  //     }
+  //   });
+  // }
 
 
   @override

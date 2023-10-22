@@ -11,7 +11,8 @@ class HistoryOfWorksRejected extends StatefulWidget {
 
 class _HistoryOfWorksRejectedState extends State<HistoryOfWorksRejected> {
   String myEmail = "";
-  String username = "";
+  String servantname = "";
+  String jobType = '';
   List<Map<String, dynamic>> confirmedOrders = [];
   bool isLoading = true;
 
@@ -31,7 +32,7 @@ class _HistoryOfWorksRejectedState extends State<HistoryOfWorksRejected> {
             .get();
         setState(() {
           myEmail = ds.data()?['email'] ?? '';
-          username = ds.data()?['userName'] ?? '';
+          servantname = ds.data()?['userName'] ?? '';
         });
         await _fetchConfirmedOrders();
       } catch (e) {
@@ -45,7 +46,8 @@ class _HistoryOfWorksRejectedState extends State<HistoryOfWorksRejected> {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('confirmed_orders')
-          .where('userName', isEqualTo: username)
+          .where('servantName', isEqualTo: servantname)
+          .where('jobType', isEqualTo: jobType)
           .get();
 
       final orders = querySnapshot.docs.map((doc) => doc.data()).toList();
