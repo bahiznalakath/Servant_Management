@@ -21,7 +21,8 @@ class _ServantManagementPageState extends State<ServantManagementPage> {
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
-            return Text('No data available'); // Handle the case where there's no data.
+            return Text(
+                'No data available'); // Handle the case where there's no data.
           }
 
           var servantDocuments = snapshot.data!.docs;
@@ -37,7 +38,8 @@ class _ServantManagementPageState extends State<ServantManagementPage> {
                 elevation: 8, // Adjust the elevation for a shadow effect
                 margin: EdgeInsets.all(8), // Add margin to the Card
                 child: ListTile(
-                  contentPadding: EdgeInsets.all(16), // Add padding to ListTile content
+                  contentPadding: EdgeInsets.all(16),
+                  // Add padding to ListTile content
                   title: Text(
                     servant['jobType'],
                     style: TextStyle(
@@ -48,10 +50,18 @@ class _ServantManagementPageState extends State<ServantManagementPage> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      ),
                       Text('Username: ${servant['userName']}'),
                       Text('Email: ${servant['email']}'),
                       Text('Experience: ${servant['experience']}'),
                       Text('Password: ${servant['password']}'),
+                      Divider(
+                        height: 1,
+                        color: Colors.grey,
+                      )
                     ],
                   ),
                   trailing: Row(
@@ -66,9 +76,11 @@ class _ServantManagementPageState extends State<ServantManagementPage> {
                               .delete()
                               .then((value) {
                             Fluttertoast.showToast(
-                                msg: "User ${servant['userName']} deleted successfully");
+                                msg:
+                                    "User ${servant['userName']} deleted successfully");
                           }).catchError((error) {
-                            Fluttertoast.showToast(msg: "Error deleting user: $error");
+                            Fluttertoast.showToast(
+                                msg: "Error deleting user: $error");
                           });
                         },
                       ),

@@ -23,15 +23,13 @@ class _CategoriesListState extends State<CategoriesList> {
     {"id": 2, "image_path": 'assets/images/img2.jpg'},
     {"id": 3, "image_path": 'assets/images/img3.jpg'}
   ];
-// Define a list of icons corresponding to each job type
   final List<IconData> _jobTypeIcons = [
-    Icons.cookie_outlined, // You can replace these with the desired icons
+    Icons.cookie_outlined,
     Icons.home,
 
     Icons.pets,
     Icons.face
   ];
-
   @override
   Widget build(BuildContext context) {
     void _handleCategoryTap(String selectedCategory) {
@@ -41,7 +39,6 @@ class _CategoriesListState extends State<CategoriesList> {
         ),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         title: _isSearching
@@ -53,7 +50,6 @@ class _CategoriesListState extends State<CategoriesList> {
                 autofocus: true,
                 style: const TextStyle(fontSize: 16, letterSpacing: 1),
                 onChanged: (val) {
-                  // Search logic
                   _searchList = ServantModel.jobTypes
                       .where((job) =>
                           job.toLowerCase().contains(val.toLowerCase()))
@@ -151,8 +147,7 @@ class _CategoriesListState extends State<CategoriesList> {
                 itemBuilder: (BuildContext context, int index) {
                   final jobType = _isSearching
                       ? _searchList[index]
-                      : ServantModel
-                          .jobTypes[index];
+                      : ServantModel.jobTypes[index];
                   final icon = _jobTypeIcons[index % _jobTypeIcons.length];
                   return Card(
                     elevation: 4.0,
@@ -171,7 +166,6 @@ class _CategoriesListState extends State<CategoriesList> {
                               ),
                             ],
                           ),
-
                           title: Text(jobType),
                           onTap: () {
                             _handleCategoryTap(jobType);

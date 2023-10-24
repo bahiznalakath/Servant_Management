@@ -32,6 +32,7 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
           ),
         ),
         child: ListView(
+          shrinkWrap: true,
           children: <Widget>[
             ListTile(
               title: const Text(
@@ -84,9 +85,7 @@ class _UserDrawerPageState extends State<UserDrawerPage> {
             //     );
             //   },
             // ),
-            const SizedBox(
-              height: 10,
-            ),
+
             Card(
               child: ListTile(
                 leading: const Icon(
