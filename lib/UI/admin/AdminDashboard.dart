@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servantmanagement/UI/admin/view_total_bookings_screen.dart';
-
+import 'BookingStatusPage.dart';
 import 'manage_servants_screen.dart';
 import 'manage_users_screen.dart';
 
@@ -81,7 +80,8 @@ class _AdminDashboardState extends State<AdminDashboard>
         children: [
           ServantManagementPage(),
           UserManagementPage(),
-          ViewTotalBookingsPage()
+
+          BookingStatusPage()
         ],
       ),
     );
