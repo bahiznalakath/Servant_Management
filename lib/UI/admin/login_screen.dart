@@ -21,7 +21,6 @@ class _AdminLoginState extends State<AdminLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
         body: Stack(children: [
           Container(
             height: double.infinity,
@@ -56,22 +55,13 @@ class _AdminLoginState extends State<AdminLogin> {
                 width: double.infinity,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20.0),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Color.fromARGB(225, 95, 27, 3),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10))
-                            ]),
-                        child: TextFormField(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 130.0),
+                        TextFormField(
                           autofocus: false,
                           controller: _userNameTextController,
                           keyboardType: TextInputType.emailAddress,
@@ -106,21 +96,10 @@ class _AdminLoginState extends State<AdminLogin> {
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Color.fromARGB(225, 95, 27, 3),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10))
-                            ]),
-                        child: TextFormField(
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
                           autofocus: false,
                           controller: _passwordTextController,
                           obscureText: true,
@@ -135,8 +114,7 @@ class _AdminLoginState extends State<AdminLogin> {
                             _passwordTextController.text = value!;
                           },
                           textInputAction: TextInputAction.done,
-                          style:
-                              TextStyle(color: Colors.black.withOpacity(0.9)),
+                          style: TextStyle(color: Colors.black.withOpacity(0.9)),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(
                               Icons.vpn_key,
@@ -158,38 +136,35 @@ class _AdminLoginState extends State<AdminLogin> {
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 200,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromARGB(225, 95, 27, 3),
-                                    blurRadius: 20,
-                                    offset: Offset(0, 10))
-                              ]),
-                          child: ElevatedButton(
-                            onPressed: () => _signIn(context),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 5,
-                              backgroundColor: const Color(0xffB81736),
-                            ),
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(color: Colors.black),
+                        const SizedBox(height: 20.0),
+                        SizedBox(
+                          height: 50,
+                          width: 200,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: const [
+                                  BoxShadow(
+                                      color: Color.fromARGB(225, 95, 27, 3),
+                                      blurRadius: 20,
+                                      offset: Offset(0, 10))
+                                ]),
+                            child: ElevatedButton(
+                              onPressed: () => _signIn(context),
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: const Color(0xffB81736),
+                              ),
+                              child: const Text(
+                                "Login",
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 40.0),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ))

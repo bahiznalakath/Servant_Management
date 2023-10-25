@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import '../../Login.dart';
 import 'BookingStatusPage/BookingStatusPage.dart';
 import 'manage_servants_screen.dart';
 import 'manage_users_screen.dart';
@@ -55,37 +58,51 @@ class _AdminDashboardState extends State<AdminDashboard>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     "Admin DashBoard",
-
-      //   centerTitle: true,
-      //   backgroundColor: Color(0xffe76f86),
-      //   leading: null,
-      // ),
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(200.0), // Increase the height to your desired value
+        preferredSize: Size.fromHeight(200.0),
+        // Increase the height to your desired value
         child: Container(
-          height: 59,
+          height: 60,
           decoration: BoxDecoration(
             color: Color(0xffe76f86),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Text(
-                'Admin DashBoard',style: TextStyle(
-            color: Colors.black,
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
-
+              SizedBox(
+                width: 40,
               ),
+              Text(
+                'Admin DashBoard',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  try {
+                    Fluttertoast.showToast(
+                        msg: "logging out Admin Successful ");
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const LoginPage(), // Replace with your login screen widget
+                      ),
+                    );
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: 'Error logging out: $e');
+                    print('Error logging out: $e');
+                  }
+                },
+                icon: Icon(Icons.logout, color: Colors.black),
+              )
             ],
           ),
         ),
       ),
-
       body: Column(
         children: [
           TabBar(
