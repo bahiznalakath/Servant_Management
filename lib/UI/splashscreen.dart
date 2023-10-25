@@ -25,20 +25,16 @@ class _SplashScreenState extends State<SplashScreen> {
       final auth = FirebaseAuth.instance;
       auth.authStateChanges().listen((user) {
         if (user == null) {
-          // User not logged in
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => LoginPage()),
                 (route) => false,
           );
         } else {
-          // User is logged in
           user.getIdTokenResult().then((tokenResult) {
             final claims = tokenResult.claims;
             final role = claims?['role'];
-
             if (role == 'admin') {
-              // User is an admin
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => AdminDashboard()),
