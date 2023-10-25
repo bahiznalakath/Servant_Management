@@ -197,8 +197,7 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   Future<void> _signIn(BuildContext context) async {
-    final panelCode =
-        _userNameTextController.text.trim();
+    final panelCode = _userNameTextController.text.trim();
     final password = _passwordTextController.text.trim();
 
     if (panelCode.isEmpty || password.isEmpty) {
@@ -223,14 +222,8 @@ class _AdminLoginState extends State<AdminLogin> {
       );
     } else {
       Fluttertoast.showToast(msg: "Login Admin Successful ");
-      SharedPreferences pref =
-      await SharedPreferences.getInstance();
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => const AdminDashboard(),
-        ),
-      );
-
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      Navigator.of(context).pushReplacementNamed('/admin_dashboard');
     }
   }
 }

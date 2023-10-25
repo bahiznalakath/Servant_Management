@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'BookingStatusPage.dart';
+import 'BookingStatusPage/BookingStatusPage.dart';
 import 'manage_servants_screen.dart';
 import 'manage_users_screen.dart';
 
@@ -33,14 +33,9 @@ class _AdminDashboardState extends State<AdminDashboard>
 
   void _handleTabSelection() {
     if (_tabController.indexIsChanging) {
-      // Handle tab change here
       if (_tabController.index == 0) {
-        // First tab is selected
       } else if (_tabController.index == 1) {
-        // Second tab is selected
-      } else if (_tabController.index == 2) {
-        // Third tab is selected
-      }
+      } else if (_tabController.index == 2) {}
     }
   }
 
@@ -60,28 +55,57 @@ class _AdminDashboardState extends State<AdminDashboard>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Admin Dashboard',
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xffe76f86),
-        bottom: TabBar(
-          controller: _tabController, // Add TabController
-          tabs: [
-            Tab(text: 'ManageServants(${servantCount.toString()})'),
-            Tab(text: 'ManageUsers(${userCount.toString()})'),
-            Tab(text: 'View Total Bookings'),
-          ],
+      // appBar: AppBar(
+      //   title: Text(
+      //     "Admin DashBoard",
+
+      //   centerTitle: true,
+      //   backgroundColor: Color(0xffe76f86),
+      //   leading: null,
+      // ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(200.0), // Increase the height to your desired value
+        child: Container(
+          height: 59,
+          decoration: BoxDecoration(
+            color: Color(0xffe76f86),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Admin DashBoard',style: TextStyle(
+            color: Colors.black,
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+          ),
+
+              ),
+            ],
+          ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController, // Add TabController
-        children: [
-          ServantManagementPage(),
-          UserManagementPage(),
 
-          BookingStatusPage()
+      body: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(text: 'ManageServants(${servantCount.toString()})'),
+              Tab(text: 'ManageUsers(${userCount.toString()})'),
+              Tab(text: 'View Total Bookings'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                ServantManagementPage(),
+                UserManagementPage(),
+                BookingStatusPage(),
+              ],
+            ),
+          ),
         ],
       ),
     );

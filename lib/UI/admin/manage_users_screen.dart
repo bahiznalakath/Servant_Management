@@ -31,18 +31,28 @@ class UserList extends StatelessWidget {
             final userEmail = userData['email'];
             final password = userData['password'];
 
-            return ListTile(
-              title: Text('username :${userName}'),
-              subtitle: Text(' Email :${userEmail} \n Password : ${password}'),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userList[index].id)
-                      .delete();
-                  Fluttertoast.showToast(msg: " User ${userName}deleted Successful ");
-                },
+            return Card(
+              elevation: 20,
+              child: Column(
+                children: [
+                  Divider(),
+                  ListTile(
+                    contentPadding: EdgeInsets.all(16),
+                    title: Text('username :${userName}'),
+                    subtitle: Text(' Email :${userEmail} \n Password : ${password}'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userList[index].id)
+                            .delete();
+                        Fluttertoast.showToast(msg: " User ${userName}deleted Successful ");
+                      },
+                    ),
+                  ),
+                  Divider(),
+                ],
               ),
             );
           },

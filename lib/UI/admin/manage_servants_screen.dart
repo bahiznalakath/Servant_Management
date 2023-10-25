@@ -35,7 +35,7 @@ class _ServantManagementPageState extends State<ServantManagementPage> {
               var servant = servantDocuments[index].data();
 
               return Card(
-                elevation: 8, // Adjust the elevation for a shadow effect
+                elevation: 20, // Adjust the elevation for a shadow effect
                 margin: EdgeInsets.all(8), // Add margin to the Card
                 child: ListTile(
                   contentPadding: EdgeInsets.all(16),

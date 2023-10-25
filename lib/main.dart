@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Firebase/firebase_options.dart';
+import 'UI/admin/AdminDashboard.dart';
 import 'UI/splashscreen.dart';
 
 void main() async {
@@ -23,6 +24,9 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
+      routes: {
+        '/admin_dashboard': (context) => AdminDashboard(),
+      },
     );
   }
 }

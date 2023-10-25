@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-import 'BookingStatusPage/confirmedBookings.dart';
-import 'BookingStatusPage/pendingBookings.dart';
-import 'BookingStatusPage/rejectedBookings.dart';
+import 'confirmedBookings.dart';
+import 'pendingBookings.dart';
+import 'rejectedBookings.dart';
 
 class BookingStatusPage extends StatefulWidget {
   const BookingStatusPage({Key? key}) : super(key: key);
@@ -48,9 +47,9 @@ class _BookingStatusPageState extends State<BookingStatusPage>
 
   Future<void> fetchUserAndServantCounts() async {
     final confirmedQuery =
-        FirebaseFirestore.instance.collection('confirmed_orders');
+    FirebaseFirestore.instance.collection('confirmed_orders');
     final rejectedQuery =
-        FirebaseFirestore.instance.collection('reject_orders');
+    FirebaseFirestore.instance.collection('reject_orders');
     final pendingQuery = FirebaseFirestore.instance.collection('orders');
     final confirmedDocuments = await confirmedQuery.get();
     final rejectedDocuments = await rejectedQuery.get();
@@ -66,23 +65,26 @@ class _BookingStatusPageState extends State<BookingStatusPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Booking Status'),
-        bottom: TabBar(
-          controller: _tabController, // Add TabController
-          tabs: [
-            Tab(text: 'Confirmed Bookings ($confirmedBookings)'),
-            Tab(text: 'Rejected Bookings ($rejectedBookings)'),
-            Tab(text: 'Pending Bookings ($pendingBookings)'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController, // Add TabController
+      body: Column(
         children: [
-          ConfirmedBookingsPage(),
-          RejectedBookingsPage(),
-          ViewTotalBooking()
+          TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(text: 'Confirmed Bookings ($confirmedBookings)'),
+              Tab(text: 'Rejected Bookings ($rejectedBookings)'),
+              Tab(text: 'Pending Bookings ($pendingBookings)'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                ConfirmedBookingsPage(),
+                RejectedBookingsPage(),
+                ViewTotalBooking(),
+              ],
+            ),
+          ),
         ],
       ),
     );

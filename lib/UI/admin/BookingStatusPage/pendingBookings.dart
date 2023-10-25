@@ -30,64 +30,66 @@ class _TotalBookingsContentState extends State<TotalBookingsContent> {
     final querySnapshot = await ordersCollection.get();
 
     querySnapshot.docs.forEach((doc) {
-      final data = doc.data() as Map<String, dynamic>;
+      final data = doc.data();
       final workerName = data['workerName'];
       final userName = data['userName'];
       final bookingDate = data['timestamp'].toDate();
 
       if (data['jobType'] == 'User') {
-        userBookings.add({'name': workerName, 'bookingDate': bookingDate});
+        setState(() {
+          userBookings.add({'name': workerName, 'bookingDate': bookingDate});
+        });
       } else {
-        servantBookings.add({
-          'userName': userName,
-          'workerName': workerName,
-          'bookingDate': bookingDate,
+        setState(() {
+          servantBookings.add({
+            'userName': userName,
+            'workerName': workerName,
+            'bookingDate': bookingDate,
+          });
         });
       }
     });
-
-    // Ensure the state is updated after fetching data
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: userBookings.length,
-            itemBuilder: (context, index) {
-              final booking = userBookings[index];
-              return ListTile(
-                title: Text(booking['name']),
-                subtitle: Text('Booking Date: ${booking['bookingDate']}'),
-              );
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Servant Bookings:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: userBookings.length,
+              itemBuilder: (context, index) {
+                final booking = userBookings[index];
+                return Card(
+                  elevation: 5,
+                  child: ListTile(
+                    title: Text(booking['name']),
+                    subtitle: Text('Booking Date: ${booking['bookingDate']}'),
+                  ),
+                );
+              },
             ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: servantBookings.length,
-            itemBuilder: (context, index) {
-              final booking = servantBookings[index];
-              return Card(
-                child: ListTile(
-                  title: Text('Booking from ${booking['userName']} to ${booking['workerName']}'),
-                  subtitle: Text('Booking Date: ${booking['bookingDate']}'),
-                ),
-              );
-            },
-          ),
-        ],
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: servantBookings.length,
+              itemBuilder: (context, index) {
+                final booking = servantBookings[index];
+                return Card(
+                  elevation: 5,
+                  child: ListTile(
+                    title: Text(
+                        'Booking from ${booking['userName']} to ${booking['workerName']}'
+                    ),
+                    subtitle: Text('Booking Date: ${booking['bookingDate']}'),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
